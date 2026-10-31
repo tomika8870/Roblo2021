@@ -42,7 +42,7 @@
         </div>
 
         <div class="editor-container">
-            <!-- PODGLĄD AVATARA 2021 -->
+            <!-- PODGLĄD AVATARA -->
             <div class="avatar-view-box">
                 <h3 style="margin-top:0;">Twój Awatar (Late 2021)</h3>
                 <div class="r2021-avatar">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <!-- MODYFIKACJA POSTACI -->
+            <!-- CUSTOMIZACJA -->
             <div class="avatar-custom-box">
                 <h3 style="margin-top:0;">Dostosuj postać</h3>
                 <label>Kolor skóry:</label>
@@ -79,7 +79,7 @@
                 <label>Klasyczne Twarze:</label>
                 <select id="s-face" onchange="updateAvatar()">
                     <option value="Smile">Smile</option>
-                    <option value="Winning Smile">Winning Smile (2021 Meme)</option>
+                    <option value="Winning Smile">Winning Smile</option>
                     <option value="Man Face">Man Face</option>
                 </select>
 
@@ -130,44 +130,43 @@
         let loggedUser = "";
         let currentSkin = "#E5A65E";
 
-        // Pobieranie "bazy danych" z pamięci przeglądarki
-        function getUsersDB() {
-            return JSON.parse(localStorage.getItem('roblo21_users')) || {};
-        }
-
-        function saveUsersDB(db) {
-            localStorage.setItem('roblo21_users', JSON.stringify(db));
-        }
+        function getUsersDB() { return JSON.parse(localStorage.getItem('roblo21_users')) || {}; }
+        function saveUsersDB(db) { localStorage.setItem('roblo21_users', JSON.stringify(db)); }
 
         function handleAuth(type) {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             if(!username || !password) return alert("Wpisz dane!");
-
             let db = getUsersDB();
 
             if (type === 'register') {
                 if (db[username]) return alert("Ta nazwa jest zajęta!");
-                db[username] = {
-                    password: password,
-                    robux: 1000,
-                    avatar: { skin: '#E5A65E', head: 'Roblox Boy (R15)', face: 'Smile', hair: 'Bacon Hair', shirt: 'Classic Roblox Jacket', tshirt: 'None', pants: 'Black Slacks', accessory: 'Roblox Cap 2021', animation: 'Classic Default Walk', emote: 'Wave (/e wave)' }
-                };
+                db[username] = { password: password, robux: 1000, avatar: { skin: '#E5A65E', head: 'Roblox Boy (R15)', face: 'Smile', hair: 'Bacon Hair', shirt: 'Classic Roblox Jacket', tshirt: 'None', pants: 'Black Slacks', accessory: 'Roblox Cap 2021', animation: 'Classic Default Walk', emote: 'Wave (/e wave)' } };
                 saveUsersDB(db);
                 alert("Konto utworzone w Roblo21! Zaloguj się teraz.");
             } else if (type === 'login') {
                 if (!db[username] || db[username].password !== password) return alert("Zły login lub hasło!");
-                
                 loggedUser = username;
                 document.getElementById('auth-panel').classList.add('hidden');
                 document.getElementById('main-panel').classList.remove('hidden');
                 document.getElementById('user-display').innerText = loggedUser;
                 document.getElementById('robux-display').innerText = db[username].robux;
-                
                 currentSkin = db[username].avatar.skin;
-                document.getElementById('s-body').value = db[username].avatar.head;
-                document.getElementById('s-face').value = db[username].avatar.face;
-                document.getElementById('s-hair').value = db[username].avatar.hair;
-                document.getElementById('s-shirt').value = db[username].avatar.shirt;
-                document.getElementById('s-tshirt').value = db[username].avatar.tshirt;
-                document.getElementById('s-pants').value = db[username].avatar.pants;
+                renderAvatar(db[username].avatar);
+            }
+        }
+
+        function setSkin(color) { currentSkin = color; updateAvatar(); }
+
+        function updateAvatar() {
+            if(!loggedUser) return;
+            let db = getUsersDB();
+            const avatarData = {
+                skin: currentSkin,
+                head: document.getElementById('s-body').value,
+                face: document.getElementById('s-face').value,
+                hair: document.getElementById('s-hair').value,
+                shirt: document.getElementById('s-shirt').value,
+                tshirt: document.getElementById('s-tshirt').value,
+                pants: document.getElementById('s-pants').value,
+                accessory: document.getElementById('s-accessory').value,
